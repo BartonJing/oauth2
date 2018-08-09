@@ -1,0 +1,47 @@
+package com.barton.oauth2.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+
+/**
+ * create by barton on 2018-6-28
+ */
+@Configuration
+@EnableAuthorizationServer
+public class OAuth2ServerAuthorizationConfig extends AuthorizationServerConfigurerAdapter {
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    /*@Override
+    public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+
+    }*/
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+                .withClient("test")//客户端ID
+                .authorizedGrantTypes("password", "refresh_token")//设置验证方式
+                .scopes("read", "write")
+                .secret("123456")
+                .accessTokenValiditySeconds(10000) //token过期时间
+                .refreshTokenValiditySeconds(10000); //refresh过期时间
+    }
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        endpoints.tokenStore(tokenStore())
+                .authenticationManager(authenticationManager); //配置userService 这样每次认证的时候会去检验用户是否锁定，有效等
+
+    }
+    @Bean
+    public TokenStore tokenStore() {
+        //使用内存的tokenStore
+        return new InMemoryTokenStore();
+    }
+}

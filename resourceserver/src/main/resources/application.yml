@@ -1,0 +1,8 @@
+server:
+  servlet:
+    context-path: /oauth2-client/
+  port: 8051
+
+oauth:
+  token: http:/localhost:8050/oauth2-server/oauth/token
+  check_token: http://localhost:8050/oauth2-server/oauth/check_token

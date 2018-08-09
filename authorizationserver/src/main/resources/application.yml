@@ -1,0 +1,4 @@
+server:
+  servlet:
+    context-path: /oauth2-server/
+  port: 8050
